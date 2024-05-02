@@ -1,0 +1,23 @@
+{
+  "name": "objhunt-backend",
+  "version": "1.0.0",
+  "description": "This is the backend for ObjHunt.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/24kaushik/ObjHunt-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/24kaushik/ObjHunt-backend/issues"
+  },
+  "homepage": "https://github.com/24kaushik/ObjHunt-backend#readme",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
