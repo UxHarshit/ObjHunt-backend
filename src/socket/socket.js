@@ -4,6 +4,8 @@ import {
   assignNewRoom,
   assignRoom,
   removePlayer,
+  modifyPoints,
+  generateLeaderboard,
   rooms,
 } from "../utils/roomManager.js";
 
@@ -42,10 +44,10 @@ export function initializeSocket(httpServer) {
     });
 
     socket.on("message", (e) => {
-      if (room === undefined || user ===undefined) {
+      if (room === undefined || user === undefined) {
         io.to(socket.id).emit("error", "no username or user didnt join a room");
       } else {
-        io.to(room).emit("message", user+": "+e);
+        io.to(room).emit("message", user + ": " + e);
       }
     });
 
@@ -70,6 +72,22 @@ export function initializeSocket(httpServer) {
           console.log(rooms);
         }
       }
+    });
+    socket.on("requestLeaderboard", (roomId) => {
+      console.log(`${socket.id} requested leaderboard for room ${roomId}`);
+      const room = rooms.find((r) => r.id === roomId);
+      if (!room) {
+        io.to(socket.id).emit("message", `Room ${roomId} not found`);
+        return;
+      }
+      // Example usage of modifyPoints function
+      modifyPoints(roomId, {
+        shubhankar: 10, // Add 10 points to player "shubhankar"
+        Rahul: -5, // Deduct 5 points from player "Rahul"
+        Shri: 20, // Add 20 points to player "Shri"
+      });
+      const leaderboard = generateLeaderboard(roomId);
+      io.to(socket.id).emit("leaderboard", leaderboard);
     });
 
     socket.on("disconnect", () => {
