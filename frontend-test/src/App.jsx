@@ -1,11 +1,14 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
-import { connect, io } from "socket.io-client";
+import { useSocket } from './context/SocketContext';
+import {useNavigate, Link} from 'react-router-dom'
 
 function App() {
   const [message, setMessage] = useState([]);
   const [user, setUser] = useState("");
-  const socket = useMemo(() => io("http://localhost:6969"), [])
+  const socket = useSocket();
+  const navigate = useNavigate();
+
 
   function handleClick(e) {
     e.preventDefault();
@@ -26,21 +29,17 @@ function App() {
       alert(msg)
     })
 
-
-    return () => {
-      socket.disconnect()
-    }
   }, [])
 
   function handleChange(e) {
     e.preventDefault();
     setUser(e.target.value);
-    console.log(user)
   }
 
   function handleRandom(e) {
     e.preventDefault();
     socket.emit("joinRandom", { username: user })
+    navigate('/game')
   }
 
   return (

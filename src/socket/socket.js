@@ -28,7 +28,6 @@ export function initializeSocket(httpServer) {
         user = username;
         console.log("user is here", user);
         let room = assignNewRoom();
-        console.log(room, "room");
         if (room !== undefined) {
           console.log("room assigned");
           socket.join(room);
@@ -51,7 +50,6 @@ export function initializeSocket(httpServer) {
         user = username;
         console.log("user is here", user);
         room = assignRoom();
-        console.log(room, "room");
         if (room !== undefined) {
           console.log("room assigned");
           socket.join(room);
@@ -69,7 +67,7 @@ export function initializeSocket(httpServer) {
     socket.on("disconnect", () => {
       console.log(`${socket.id} is gone`);
       if (room !== undefined) {
-        removePlayer(user, room);
+        removePlayer(socket.id, room);
         io.to(room).emit("message", `${user} left the room`);
       }
     });
