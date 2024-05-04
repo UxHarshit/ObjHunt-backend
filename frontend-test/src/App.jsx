@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { useSocket } from './context/SocketContext';
-import {useNavigate, Link} from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 function App() {
   const [message, setMessage] = useState([]);
@@ -25,7 +25,7 @@ function App() {
       console.log(e)
       setMessage(prevMessage => [...prevMessage, e])
     })
-    socket.on("error", (msg)=>{
+    socket.on("error", (msg) => {
       alert(msg)
     })
 
