@@ -30,19 +30,20 @@ function assignRoom() {
   }
 }
 
-function addPlayer(username, socketId, roomId) {
+function addPlayer(user, socketId, roomId) {
   for (let room = 0; room < rooms.length; room++) {
     if (rooms[room].id == roomId) {
-      //Loop to ckeck if player is duplicate
+      // Loop to check if player is duplicate
       for (let i = 0; i < rooms[room].players.length; i++) {
-        if(rooms[room].players[i].id===socketId){
-          console.log("duplicate user")
+        if (rooms[room].players[i].id === socketId) {
+          console.log("duplicate user");
           return 0;
         }
       }
       const player = {
         id: socketId,
-        user: username,
+        username: user, // Changed username to user
+        points: 0,
       };
       rooms[room].players.push(player);
       console.log(rooms[room]);
@@ -65,5 +66,60 @@ function removePlayer(socketId, roomId) {
     }
   }
 }
+function generateLeaderboard(roomId) {
+  const room = rooms.find((room) => room.id === roomId);
+  if (!room) {
+    return "Room not found";
+  }
 
-export { rooms, assignNewRoom, assignRoom, addPlayer, removePlayer };
+  const leaderboard = room.players.map((player) => ({
+    username: player.username,
+    points: player.points,
+  }));
+
+  // Sort leaderboard by points in descending order
+  leaderboard.sort((a, b) => b.points - a.points);
+
+  // Send the leaderboard data to the server
+  sendLeaderboardToServer(roomId, leaderboard);
+
+  return leaderboard;
+}
+function modifyPoints(roomId, pointModifiers) {
+  const room = rooms.find((room) => room.id === roomId);
+  if (!room) {
+    console.log("Room not found");
+    return;
+  }
+
+  Object.entries(pointModifiers).forEach(([username, modifier]) => {
+    const player = room.players.find(
+      (player) => player.username.trim() === username.trim()
+    );
+    if (player) {
+      player.points += modifier;
+      console.log(`Points modified for player ${username} in Room ${roomId}`);
+    } else {
+      console.log(`Player ${username} not found in Room ${roomId}`);
+    }
+  });
+
+  // Log the updated room object
+  console.log(room);
+}
+
+function sendLeaderboardToServer(roomId, leaderboard) {
+  // Simulate sending data to the server
+  console.log(`Leaderboard for Room ${roomId} sent to server:`, leaderboard);
+}
+// Example usage of modifyPoints function
+
+export {
+  rooms,
+  assignNewRoom,
+  assignRoom,
+  addPlayer,
+  removePlayer,
+  modifyPoints,
+  generateLeaderboard,
+};
