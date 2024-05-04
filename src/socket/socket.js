@@ -6,6 +6,7 @@ import {
   removePlayer,
   rooms,
 } from "../utils/roomManager.js";
+import { checkImage } from "../utils/imageManager.js";
 
 export function initializeSocket(httpServer) {
   const io = new Server(httpServer, {
@@ -72,6 +73,14 @@ export function initializeSocket(httpServer) {
       }
     });
 
+    socket.on("upload", (data) => {
+      console.log("got an image");
+      const base64Data = data.image.replace(/^data:image\/\w+;base64,/, "");
+      const buffer = Buffer.from(base64Data, "base64");
+      const filename = Date.now() + "-" + data.filename;
+      const isCorrectObject = checkImage(filename, buffer, "bottle");
+      console.log(isCorrectObject);
+    });
     socket.on("disconnect", () => {
       console.log(`${socket.id} is gone`);
       if (room !== undefined) {

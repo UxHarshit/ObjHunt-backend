@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { useSocket } from './context/SocketContext';
 import { useNavigate, Link } from 'react-router-dom'
@@ -42,12 +42,38 @@ function App() {
     navigate('/game')
   }
 
+  const imgRef = useRef();
+
+  function sendImage(e) {
+    let file  = imgRef.current.files[0];
+    console.log(file)
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const image = e.target.result;
+  
+        const imageData = {
+          image: image,
+          filename: file.name
+        };
+  
+        socket.emit('upload', imageData);
+      }
+      reader.readAsDataURL(file);
+    } else {
+      alert('Please select an image.');
+    }
+
+  }
+
   return (
     <>
       <input type="text" name="" placeholder='username' onChange={handleChange} value={user} id="" />
       <button onClick={handleRandom}>Join Random</button>
       <button onClick={handleClick}>Create Room</button>
       <div>{message.map((e) => <h6 id='e'>{e}</h6>)}</div>
+      <input type="file" accept='image/*' ref={imgRef} />
+      <button onClick={sendImage}>SendImage</button>
     </>
   )
 }
