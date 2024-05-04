@@ -1,12 +1,12 @@
 import { Server } from "socket.io";
 import {
-  addPlayer,
+  rooms,
   assignNewRoom,
   assignRoom,
+  addPlayer,
   removePlayer,
   modifyPoints,
   generateLeaderboard,
-  rooms,
 } from "../utils/roomManager.js";
 
 export function initializeSocket(httpServer) {
@@ -49,7 +49,9 @@ export function initializeSocket(httpServer) {
       } else {
         io.to(room).emit("message", user + ": " + e);
       }
+      io.to(room).emit("leaderboard", generateLeaderboard(room));
     });
+
 
     socket.on("joinRandom", ({ username }) => {
       console.log("joining random room");
@@ -70,6 +72,8 @@ export function initializeSocket(httpServer) {
             io.to(room).emit("newplayer", `${user} joined the room!`);
           }
           console.log(rooms);
+          io.to(room).emit("leaderboard", generateLeaderboard(room));
+
         }
       }
     });
@@ -81,11 +85,7 @@ export function initializeSocket(httpServer) {
         return;
       }
       // Example usage of modifyPoints function
-      modifyPoints(roomId, {
-        shubhankar: 10, // Add 10 points to player "shubhankar"
-        Rahul: -5, // Deduct 5 points from player "Rahul"
-        Shri: 20, // Add 20 points to player "Shri"
-      });
+     
       const leaderboard = generateLeaderboard(roomId);
       io.to(socket.id).emit("leaderboard", leaderboard);
     });
@@ -95,6 +95,7 @@ export function initializeSocket(httpServer) {
       if (room !== undefined) {
         removePlayer(socket.id, room);
         io.to(room).emit("message", `${user} left the room`);
+        io.to(room).emit("leaderboard", generateLeaderboard(room));
       }
     });
   });

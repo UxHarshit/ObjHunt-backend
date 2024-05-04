@@ -30,10 +30,10 @@ function assignRoom() {
   }
 }
 
-function addPlayer(username, socketId, roomId) {
+function addPlayer(user, socketId, roomId) {
   for (let room = 0; room < rooms.length; room++) {
     if (rooms[room].id == roomId) {
-      //Loop to ckeck if player is duplicate
+      // Loop to check if player is duplicate
       for (let i = 0; i < rooms[room].players.length; i++) {
         if (rooms[room].players[i].id === socketId) {
           console.log("duplicate user");
@@ -42,7 +42,7 @@ function addPlayer(username, socketId, roomId) {
       }
       const player = {
         id: socketId,
-        user: username,
+        username: user, // Changed username to user
         points: 0,
       };
       rooms[room].players.push(player);
@@ -114,4 +114,12 @@ function sendLeaderboardToServer(roomId, leaderboard) {
 }
 // Example usage of modifyPoints function
 
-export { rooms, assignNewRoom, assignRoom, addPlayer, removePlayer,modifyPoints ,generateLeaderboard };
+export {
+  rooms,
+  assignNewRoom,
+  assignRoom,
+  addPlayer,
+  removePlayer,
+  modifyPoints,
+  generateLeaderboard,
+};
