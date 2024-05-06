@@ -2,6 +2,9 @@ import express from "express";
 import http from "http";
 import RoomRouter from "./routes/room.js";
 import { initializeSocket } from "./socket/socket.js";
+import dotenv from 'dotenv';
+dotenv.config({path: "./.env"});
+
 
 const app = express();
 const httpServer = http.createServer(app);
