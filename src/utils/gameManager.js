@@ -1,33 +1,34 @@
-import { rooms } from "./roomManager.js";
+import { rooms, setPlaying } from "./roomManager.js";
 const OBJECTS = ["bottle", "remote", "bat", "object4"];
-const ROUND_TIME = process.env.ROUND_TIME;
 
-const startGame = (roomId) => {
-  console.log("started game");
+const startGame = (roomId, io) => {
   const room = rooms.find((room) => room.id === roomId);
   if (!room) {
-    console.log("one")
+    console.log("one");
     return 0;
   }
   if (room.isPlaying) {
-    console.log("two")
+    console.log("two");
 
     return 0;
   }
   if (room.players.length < 2) {
-    console.log("three")
-
+    console.log("three");
     return 0;
   }
-  room.isPlaying = true;
   room.current_obj = OBJECTS[Math.floor(Math.random() * OBJECTS.length)];
 
   setTimeout(() => {
-    room.isPlaying = false;
-  }, ROUND_TIME);
-  
+    setPlaying(roomId, true)
+    setTimeout(() => {
+      setPlaying(roomId, false)
+      io.to(roomId).emit("game", { msg: "game ended" });
+    }, process.env.ROUND_TIME);
+    io.to(roomId).emit("game", { msg: "game started", object: room.current_obj });
+  }, 5000);
+
+  io.to(roomId).emit("game", { msg: "starting game in 5sec" });
   console.log(room.current_obj);
-  return room.current_obj;
 };
 
 export { startGame };

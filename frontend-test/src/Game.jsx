@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSocket } from './context/SocketContext';
 
 const Game = () => {
@@ -26,6 +26,11 @@ const Game = () => {
       alert(msg);
     });
 
+    socket.on("game", (msg)=>{
+      alert(msg);
+      console.log("game", msg)
+    })
+
     // Clean up function to remove event listeners when component unmounts
     return () => {
       socket.off('newplayer');
@@ -43,6 +48,30 @@ const Game = () => {
     console.log(chat);
     socket.emit("message", chat);
     setChat("");
+  }
+
+  const imgRef = useRef();
+
+  function sendImage(e) {
+    let file = imgRef.current.files[0];
+    console.log(file)
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const image = e.target.result;
+
+        const imageData = {
+          image: image,
+          filename: file.name
+        };
+
+        socket.emit('upload', imageData);
+      }
+      reader.readAsDataURL(file);
+    } else {
+      alert('Please select an image.');
+    }
+
   }
 
   return (
@@ -71,6 +100,8 @@ const Game = () => {
           </tbody>
         </table>
       </div>
+      <input type="file" accept='image/*' ref={imgRef} />
+      <button onClick={sendImage}>SendImage</button>
       <div className='absolute bottom-10 mx-auto'>
         <input type="text" placeholder='Chat here' value={chat} onChange={handleChat} />
         <button onClick={handleSend}>Send</button>

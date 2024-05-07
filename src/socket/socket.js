@@ -5,10 +5,10 @@ import {
   assignRoom,
   addPlayer,
   removePlayer,
-  // modifyPoints,
   assignPoints,
   generateLeaderboard,
   GetRoomDetails,
+  updateSubmitted,
 } from "../utils/roomManager.js";
 import { checkImage } from "../utils/imageManager.js";
 import { startGame } from "../utils/gameManager.js";
@@ -70,7 +70,8 @@ export function initializeSocket(httpServer) {
           // console.log("room assigned");
           socket.join(room);
           let addedPlayer = addPlayer(user, socket.id, room);
-          console.log(startGame(room))
+          const gamestatus =startGame(room, io);
+          
           
           if (addedPlayer === 0) {
             io.to(socket.id).emit("error", `You've already joined the room!`);
@@ -106,13 +107,12 @@ export function initializeSocket(httpServer) {
       } else {
         // console.log("got an image");
         const currentRoom = GetRoomDetails(room);
-        const currentPlayerInd = currentRoom.find(
+        const currentPlayer = currentRoom.players.find(
           (player) => player.id === socket.id
         );
-        if (!currentPlayerInd) {
+        if (!currentPlayer) {
           io.to(socket.id).emit("error", "user not found");
         } else {
-          const currentPlayer = currentRoom.player[currentPlayerInd];
           if (currentPlayer.hasSubmitted) {
             io.to(socket.id).emit("error", "Already submitted");
           } else {
@@ -123,7 +123,7 @@ export function initializeSocket(httpServer) {
             const buffer = Buffer.from(base64Data, "base64");
             const filename = Date.now() + "-" + data.filename;
             const isCorrectObject = checkImage(filename, buffer, "bottle");
-            const playersSubmitted = currentRoom.filter((e) => e.hasSubmitted);
+            const playersSubmitted = currentRoom.players.filter((e) => e.hasSubmitted);
 
             const pointsAssigned = assignPoints(
               room,
@@ -131,11 +131,11 @@ export function initializeSocket(httpServer) {
               playersSubmitted,
               isCorrectObject
             );
+            updateSubmitted(socket.id, room);
             if (!pointsAssigned) {
               io.to(socket.id).emit("error", "Points not assigned");
             }
             io.to(room).emit("leaderboard", generateLeaderboard(room));
-            io.to(room).emit("leaderboard", leaderboard);
             // console.log(isCorrectObject);
           }
         }

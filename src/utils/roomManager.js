@@ -1,6 +1,6 @@
 const rooms = [];
-import dotenv from 'dotenv';
-dotenv.config({path: "./.env"});
+import dotenv from "dotenv";
+dotenv.config({ path: "./.env" });
 
 for (let i = 0; i < process.env.MAX_ROOMS; i++) {
   rooms.push({
@@ -93,27 +93,52 @@ function sendLeaderboardToServer(roomId, leaderboard) {
 function GetRoomDetails(roomId) {
   const room = rooms.find((room) => room.id === roomId);
   if (!room) return 0;
-  return rooms[room];
+  return room;
 }
 
 const assignPoints = (roomId, userId, playersArray, isCorrectObject) => {
-  const room = rooms.find((room) => room.id === roomId);
-  if (!room) {
+  const room = rooms.findIndex((room) => room.id === roomId);
+  if (room === -1) {
     return 0;
   }
-  const playerInd = rooms[room].find((player) => player.id === userId);
-  if (!playerInd) {
+  const playerInd = rooms[room].players.findIndex(
+    (player) => player.id === userId
+  );
+  if (playerInd === -1) {
     return 0;
   }
   if (!isCorrectObject) {
     return 1;
   }
-
+  console.log(playersArray);
   const point = process.env.MAX_PLAYERS - playersArray.length;
   rooms[room].players[playerInd].points += point;
 
   return 1;
 };
+
+function updateSubmitted(userId, roomId) {
+  const room = rooms.findIndex((room) => room.id === roomId);
+  if (room === -1) {
+    return 0;
+  }
+  const playerInd = rooms[room].players.findIndex(
+    (player) => player.id === userId
+  );
+  if (playerInd === -1) {
+    return 0;
+  }
+  rooms[room].players[playerInd].hasSubmitted = true;
+}
+
+function setPlaying(roomId, val) {
+  rooms.forEach((room, ind)=>{
+    if(room.id===roomId){
+      rooms[ind].isPlaying = val;
+      console.log(rooms[ind]);
+    }
+  })
+}
 
 export {
   rooms,
@@ -123,5 +148,7 @@ export {
   removePlayer,
   generateLeaderboard,
   GetRoomDetails,
-  assignPoints
+  assignPoints,
+  updateSubmitted,
+  setPlaying
 };
