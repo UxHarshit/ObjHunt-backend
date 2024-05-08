@@ -14,7 +14,7 @@ const Game = () => {
     });
 
     socket.on('message', (e) => {
-      console.log(e);
+      // console.log(e);
       setMessage(prevMessage => [...prevMessage, e]);
     });
 
@@ -27,7 +27,7 @@ const Game = () => {
     });
 
     socket.on("game", (msg)=>{
-      alert(msg);
+      // alert(msg);
       console.log("game", msg)
     })
 

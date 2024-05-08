@@ -123,7 +123,7 @@ export function initializeSocket(httpServer) {
             const buffer = Buffer.from(base64Data, "base64");
             const filename = Date.now() + "-" + data.filename;
             const isCorrectObject = checkImage(filename, buffer, "bottle");
-            const playersSubmitted = currentRoom.players.filter((e) => e.hasSubmitted);
+            const playersSubmitted = currentRoom.players.filter((e) => e.isCorrect);
 
             const pointsAssigned = assignPoints(
               room,

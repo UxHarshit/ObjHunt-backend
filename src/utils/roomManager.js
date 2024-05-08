@@ -8,6 +8,7 @@ for (let i = 0; i < process.env.MAX_ROOMS; i++) {
     players: [],
     current_obj: "",
     isPlaying: false,
+    round: 0,
   });
 }
 
@@ -45,6 +46,7 @@ function addPlayer(user, socketId, roomId) {
         username: user,
         points: 0,
         hasSubmitted: false,
+        isCorrect: false
       };
       rooms[room].players.push(player);
       break;
@@ -113,6 +115,7 @@ const assignPoints = (roomId, userId, playersArray, isCorrectObject) => {
   console.log(playersArray);
   const point = process.env.MAX_PLAYERS - playersArray.length;
   rooms[room].players[playerInd].points += point;
+  rooms[room].players[playerInd].isCorrect = true;
 
   return 1;
 };
@@ -132,13 +135,34 @@ function updateSubmitted(userId, roomId) {
 }
 
 function setPlaying(roomId, val) {
-  rooms.forEach((room, ind)=>{
-    if(room.id===roomId){
+  rooms.forEach((room, ind) => {
+    if (room.id === roomId) {
       rooms[ind].isPlaying = val;
       console.log(rooms[ind]);
     }
-  })
+  });
 }
+
+function setRound(roomId, round) {
+  rooms.forEach((room, ind) => {
+    if (room.id === roomId) {
+      rooms[ind].round = round;
+      console.log(rooms[ind]);
+    }
+  });
+}
+
+function resetStats(roomId) {
+  rooms.forEach((room, ind) => {
+    if (room.id === roomId) {
+      rooms[ind].players.forEach((player, playerInd) => {
+        rooms[ind].players[playerInd].hasSubmitted = false;
+        rooms[ind].players[playerInd].isCorrect = false;
+      });
+    }
+  });
+}
+
 
 export {
   rooms,
@@ -150,5 +174,7 @@ export {
   GetRoomDetails,
   assignPoints,
   updateSubmitted,
-  setPlaying
+  setPlaying,
+  setRound,
+  resetStats
 };
