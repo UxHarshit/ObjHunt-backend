@@ -1,6 +1,8 @@
-const rooms = [];
 import dotenv from "dotenv";
 dotenv.config({ path: "./.env" });
+
+const rooms = [];
+const OBJECTS = ["bottle", "remote", "bat", "object4"];
 
 for (let i = 0; i < process.env.MAX_ROOMS; i++) {
   rooms.push({
@@ -23,7 +25,7 @@ function assignNewRoom() {
 
 function assignRoom() {
   let availableRooms = rooms.filter(
-    (val, ind) => val.players.length < process.env.MAX_PLAYERS
+    (room) => room.players.length < process.env.MAX_PLAYERS
   );
   if (availableRooms.length === 0) {
     return undefined;
@@ -46,7 +48,7 @@ function addPlayer(user, socketId, roomId) {
         username: user,
         points: 0,
         hasSubmitted: false,
-        isCorrect: false
+        isCorrect: false,
       };
       rooms[room].players.push(player);
       break;
@@ -163,6 +165,15 @@ function resetStats(roomId) {
   });
 }
 
+function generateObject(roomId) {
+  const roomInd = rooms.findIndex((room) => room.id == roomId);
+  if (roomInd === -1) {
+    return 0;
+  }
+  const randomObj = OBJECTS[Math.floor(Math.random() * OBJECTS.length)];
+  rooms[roomInd].current_obj = randomObj;
+  return randomObj;
+}
 
 export {
   rooms,
@@ -176,5 +187,6 @@ export {
   updateSubmitted,
   setPlaying,
   setRound,
-  resetStats
+  resetStats,
+  generateObject,
 };
