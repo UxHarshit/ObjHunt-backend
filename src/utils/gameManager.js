@@ -1,40 +1,47 @@
-import {resetStats, rooms, setPlaying, setRound } from "./roomManager.js";
-const OBJECTS = ["bottle", "remote", "bat", "object4"];
-
+import { generateObject, resetStats, rooms, setPlaying, setRound } from "./roomManager.js";
+//Function to start the game
 const startGame = (roomId, io) => {
+  //Finding the current room
   const room = rooms.find((room) => room.id === roomId);
-  if (!room) {
-    return 0;
-  }
-  if (room.isPlaying) {
-    return 0;
-  }
-  if (room.players.length < 2) {
-    return 0;
-  }
-  if (room.round >= process.send.ROUNDS) {
-    return 0;
-  }
-  room.current_obj = OBJECTS[Math.floor(Math.random() * OBJECTS.length)];
 
-  setPlaying(roomId, true);
+  //If room doesnt exist, already playing status, player less than 2, rounds aready exhausted; return 0
+  if (
+    !room ||
+    room.isPlaying ||
+    room.players.length < 2 ||
+    room.round >= process.send.ROUNDS
+  ) {
+    return 0;
+  }
 
+  //Recursive function to keep the rounds running
   const a = () => {
+    //Storing latest room object
     const nroom = rooms.find((room) => room.id === roomId);
     console.log("nroom", nroom);
+
+    //If the number of rounds is equal to max round, end the match
     if (nroom.round >= process.env.ROUNDS) {
       console.log("matchend");
-      setRound(roomId, 0);
-      resetStats(roomId);
+
+      setRound(roomId, 0); //Reset rounds
+      resetStats(roomId); //Reset flags of players(not points)
       io.to(roomId).emit("game", { msg: "Match ended" });
     } else {
+      //Starting round after 5 seconds
       setTimeout(() => {
-        setRound(roomId, nroom.round + 1);
-        resetStats(roomId);
+        //generating a random object
+        const randomObj = generateObject(room.id)
 
+        setPlaying(roomId, true); //set the isPlaying flag of room to true
+        setRound(roomId, nroom.round + 1); //Update round number
+        resetStats(roomId); //Reset player flags(not points)
+
+        //Ending the round after ROUND_TIME (env variable) milisecs
         setTimeout(() => {
-          setPlaying(roomId, false);
+          setPlaying(roomId, false); // setting playing status to false
           io.to(roomId).emit("game", { msg: "round ended" });
+          //Calling this function again
           a();
         }, process.env.ROUND_TIME);
 
@@ -48,7 +55,6 @@ const startGame = (roomId, io) => {
   };
 
   a();
-  console.log(room.current_obj);
 };
 
 export { startGame };
