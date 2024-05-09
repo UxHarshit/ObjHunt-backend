@@ -13,7 +13,7 @@ function App() {
   function handleClick(e) {
     e.preventDefault();
     socket.emit("createRoom", { username: user })
-    setUser("");
+    navigate("/game")
   }
 
   useEffect(() => {
