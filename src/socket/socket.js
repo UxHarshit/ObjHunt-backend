@@ -79,6 +79,7 @@ export function initializeSocket(httpServer) {
         //Storing username and assigning a room
         user = username;
         room = assignRoom();
+        console.log(user, room)
 
         //Checking if a room is assigned successfully
         if (room !== undefined) {
@@ -119,11 +120,11 @@ export function initializeSocket(httpServer) {
     // });
 
     //Handling image uploads
-    socket.on("upload", (data) => {
+    socket.on("upload", async (data) => {
       //Checking if data is being recieved in correct format and also checking if user and room exists
       if (
         typeof data !== "object" &&
-        data.hasOwnProperty("filename", "image") &&
+        data.hasOwnProperty("image") &&
         user &&
         room !== undefined
       ) {
@@ -151,14 +152,9 @@ export function initializeSocket(httpServer) {
               ""
             );
             const buffer = Buffer.from(base64Data, "base64");
-            const filename = Date.now() + "-" + data.filename;
 
             //Checking if image matches the object
-            const isCorrectObject = checkImage(
-              filename,
-              buffer,
-              currentRoom.current_obj
-            );
+            const isCorrectObject = await checkImage(buffer, room);
 
             //Assigning points to user if image is correct
             const playersSubmitted = currentRoom.players.filter(
