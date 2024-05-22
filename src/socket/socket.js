@@ -79,7 +79,7 @@ export function initializeSocket(httpServer) {
         //Storing username and assigning a room
         user = username;
         room = assignRoom();
-        console.log(user, room)
+        console.log(user, room);
 
         //Checking if a room is assigned successfully
         if (room !== undefined) {
@@ -100,6 +100,44 @@ export function initializeSocket(httpServer) {
             //Emitting new leaderboard to the room
             io.to(room).emit("leaderboard", generateLeaderboard(room));
           }
+        }
+      }
+    });
+
+    socket.on("joinById", ({ username, roomId }) => {
+      if (!username) {
+        // If no username, emitting error.
+        io.to(socket.id).emit("error", "Please send username");
+      } else if (!roomId) {
+        // If no room ID, emitting error.
+        io.to(socket.id).emit("error", "Please send room ID");
+      } else {
+        // Storing username and roomId
+        user = username;
+        room = roomId;
+        console.log(user, room);
+
+        // Checking if the room exists
+        if (room !== undefined) {
+          socket.join(room); // Joining user to socket channel
+
+          // Adding player to the specified room
+          const addedPlayer = addPlayer(user, socket.id, room);
+
+          // Checking if the user already joined the room
+          if (addedPlayer === 0) {
+            io.to(socket.id).emit("error", `You've already joined the room!`);
+          } else {
+            io.to(room).emit("newplayer", `${user} joined the room!`);
+
+            // Starting the game (only if there are 2 or more players. read function declaration for more info)
+            startGame(room, io);
+
+            // Emitting new leaderboard to the room
+            io.to(room).emit("leaderboard", generateLeaderboard(room));
+          }
+        } else {
+          io.to(socket.id).emit("error", "Invalid room ID");
         }
       }
     });
