@@ -50,6 +50,7 @@ const startGame = (roomId, io) => {
           object: room.current_obj,
         });
       }, 5000);
+      console.log("current_obj", room.current_obj)
       io.to(roomId).emit("game", { msg: "starting game in 5sec" });
     }
   };

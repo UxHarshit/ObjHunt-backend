@@ -119,7 +119,7 @@ export function initializeSocket(httpServer) {
     // });
 
     //Handling image uploads
-    socket.on("upload", (data) => {
+    socket.on("upload", async (data) => {
       //Checking if data is being recieved in correct format and also checking if user and room exists
       if (
         typeof data !== "object" &&
@@ -154,11 +154,13 @@ export function initializeSocket(httpServer) {
             const filename = Date.now() + "-" + data.filename;
 
             //Checking if image matches the object
-            const isCorrectObject = checkImage(
+            const isCorrectObject = await checkImage(
               filename,
               buffer,
               currentRoom.current_obj
             );
+
+            console.log(isCorrectObject)
 
             //Assigning points to user if image is correct
             const playersSubmitted = currentRoom.players.filter(
