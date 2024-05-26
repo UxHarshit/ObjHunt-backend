@@ -18,7 +18,6 @@ const startGame = (roomId, io) => {
   const a = () => {
     //Storing latest room object
     const nroom = rooms.find((room) => room.id === roomId);
-    console.log("nroom", nroom);
 
     //If the number of rounds is equal to max round, end the match
     if (nroom.round >= process.env.ROUNDS) {
@@ -48,6 +47,7 @@ const startGame = (roomId, io) => {
         io.to(roomId).emit("game", {
           msg: "round started",
           object: room.current_obj,
+          round: room.round
         });
       }, 5000);
       io.to(roomId).emit("game", { msg: "starting game in 5sec" });

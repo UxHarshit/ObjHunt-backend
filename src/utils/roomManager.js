@@ -127,7 +127,6 @@ const assignPoints = (roomId, userId, playersArray, isCorrectObject) => {
   if (!isCorrectObject) {
     return 1;
   }
-  console.log(playersArray);
   const point = process.env.MAX_PLAYERS - playersArray.length;
   rooms[room].players[playerInd].points += point;
   rooms[room].players[playerInd].isCorrect = true;
@@ -156,7 +155,6 @@ function setPlaying(roomId, val) {
     const room = rooms[ind];
     if (room.id === roomId) {
       rooms[ind].isPlaying = val;
-      console.log(rooms[ind]);
       break;
     }
   }
@@ -168,7 +166,6 @@ function setRound(roomId, round) {
     const room = rooms[ind];
     if (room.id === roomId) {
       rooms[ind].round = round;
-      console.log(rooms[ind]);
       break;
     }
   }
