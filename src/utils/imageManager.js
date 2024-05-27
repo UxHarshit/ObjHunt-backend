@@ -1,31 +1,38 @@
+import * as cocoSsd from "@tensorflow-models/coco-ssd";
+import * as tf from "@tensorflow/tfjs-node";
 import fs from "fs/promises";
-
-// const checkImage = (buffer, object) => {
-//   //Saving image temporarily. images are not meant to save in production. the image will be sent to ML model to detect if the object matches the image.
-//   fs.writeFile("uploads/" + Math.random(), buffer, (err) => {
-//     if (err) {
-//       console.error(err);
-//     } else {
-//       console.log("Image uploaded:");
-//     }
-//   });
-
-//   // The model will return true if the object and image are same and false if they are different.
-//   // sending a random response for now.
-//   return Math.round(Math.random()) === 0 ? true : false;
-// };
 
 //temporary function name
 const checkImage = async (image, room) => {
   try {
-    await fs.writeFile("uploads/" + Math.random()+ ".jpg", image);
+    const name = Math.random();
+    await fs.writeFile("uploads/" + name + ".jpg", image);
     console.log("Image uploaded");
+    
+    // Loading the model and the image
+    const image = await fs.readFile("uploads/" + filename);
+    const [model, imageBuffer] = await Promise.all([
+      cocoSsd.load(),
+      image,
+    ]);
 
-    // The model will return true if the object and image are same and false if they are different.
-    // sending a random response for now.
-    return Math.round(Math.random()) === 0 ? true : false;
+    // Decoding the image to tensor
+    const img = tf.node.decodeImage(imageBuffer, 3);
+
+    // Detecting objects in the image
+    const predictions = await model.detect(img);
+    console.log("Predictions: ", predictions);
+
+    // Checking if the object is present in the image
+    for (let prediction of predictions) {
+      if (prediction.class === object) {
+        return true;
+      }
+    }
+    return false;
   } catch (err) {
     console.error(err);
+    return false; 
   }
 };
 

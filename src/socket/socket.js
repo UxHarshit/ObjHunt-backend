@@ -194,6 +194,9 @@ export function initializeSocket(httpServer) {
             //Checking if image matches the object
             const isCorrectObject = await checkImage(buffer, room);
 
+
+            console.log(isCorrectObject)
+
             //Assigning points to user if image is correct
             const playersSubmitted = currentRoom.players.filter(
               (e) => e.isCorrect
