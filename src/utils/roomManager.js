@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: "./.env" });
 
 const rooms = [];
-const OBJECTS = ["bottle", "remote", "cell phone", "pen"];
+const OBJECTS = ["bottle", "remote", "cell phone"];
 
 //Filling up rooms array with empty rooms. (looking for a better approach).
 for (let i = 0; i < process.env.MAX_ROOMS; i++) {
