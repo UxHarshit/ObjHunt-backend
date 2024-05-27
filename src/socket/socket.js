@@ -79,6 +79,7 @@ export function initializeSocket(httpServer) {
         //Storing username and assigning a room
         user = username;
         room = assignRoom();
+        console.log(user, room);
 
         //Checking if a room is assigned successfully
         if (room !== undefined) {
@@ -103,6 +104,44 @@ export function initializeSocket(httpServer) {
       }
     });
 
+    socket.on("joinById", async (data) => {
+      let {username, roomId} = await JSON.parse(data);
+      if (!username) {
+        // If no username, emitting error.
+        io.to(socket.id).emit("error", "Please send username");
+      } else if (!roomId) {
+        // If no room ID, emitting error.
+        io.to(socket.id).emit("error", "Please send room ID");
+      } else {
+        // Storing username and roomId
+        user = username;
+        room = roomId;
+
+        // Checking if the room exists
+        if (room !== undefined) {
+          socket.join(room); // Joining user to socket channel
+
+          // Adding player to the specified room
+          const addedPlayer = addPlayer(user, socket.id, room);
+
+          // Checking if the user already joined the room
+          if (addedPlayer === 0) {
+            io.to(socket.id).emit("error", `You've already joined the room!`);
+          } else {
+            io.to(room).emit("newplayer", `${user} joined the room!`);
+
+            // Starting the game (only if there are 2 or more players. read function declaration for more info)
+            startGame(room, io);
+
+            // Emitting new leaderboard to the room
+            io.to(room).emit("leaderboard", generateLeaderboard(room));
+          }
+        } else {
+          io.to(socket.id).emit("error", "Invalid room ID");
+        }
+      }
+    });
+
     //TODO: THIS WHOLE THING COULDVE BEEN DONE IN A ROUTE INSTEAD. (sorry for caps lol, just wanted your attention UwU).
     //
     // //Handling mannual leaderboard request
@@ -123,7 +162,7 @@ export function initializeSocket(httpServer) {
       //Checking if data is being recieved in correct format and also checking if user and room exists
       if (
         typeof data !== "object" &&
-        data.hasOwnProperty("filename", "image") &&
+        data.hasOwnProperty("image") &&
         user &&
         room !== undefined
       ) {
@@ -151,14 +190,10 @@ export function initializeSocket(httpServer) {
               ""
             );
             const buffer = Buffer.from(base64Data, "base64");
-            const filename = Date.now() + "-" + data.filename;
 
             //Checking if image matches the object
-            const isCorrectObject = await checkImage(
-              filename,
-              buffer,
-              currentRoom.current_obj
-            );
+            const isCorrectObject = await checkImage(buffer, room);
+
 
             console.log(isCorrectObject)
 

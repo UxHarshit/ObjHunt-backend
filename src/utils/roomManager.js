@@ -79,9 +79,10 @@ function removePlayer(socketId, roomId) {
 
 //Function to generate leaderboard
 function generateLeaderboard(roomId) {
-  const room = rooms.find((room) => room.id === roomId);
+  console.log(roomId)
+  const room = rooms.find((room) => room.id == roomId);
   if (!room) {
-    return "Room not found";
+    return [];
   }
 
   const leaderboard = room.players.map((player) => ({
@@ -97,7 +98,7 @@ function generateLeaderboard(roomId) {
 
 //Function to get a room's details
 function GetRoomDetails(roomId) {
-  const room = rooms.find((room) => room.id === roomId);
+  const room = rooms.find((room) => room.id == roomId);
   if (!room) return 0;
   return room;
 }
@@ -127,7 +128,6 @@ const assignPoints = (roomId, userId, playersArray, isCorrectObject) => {
   if (!isCorrectObject) {
     return 1;
   }
-  console.log(playersArray);
   const point = process.env.MAX_PLAYERS - playersArray.length;
   rooms[room].players[playerInd].points += point;
   rooms[room].players[playerInd].isCorrect = true;
@@ -156,7 +156,6 @@ function setPlaying(roomId, val) {
     const room = rooms[ind];
     if (room.id === roomId) {
       rooms[ind].isPlaying = val;
-      console.log(rooms[ind]);
       break;
     }
   }
@@ -168,7 +167,6 @@ function setRound(roomId, round) {
     const room = rooms[ind];
     if (room.id === roomId) {
       rooms[ind].round = round;
-      console.log(rooms[ind]);
       break;
     }
   }
