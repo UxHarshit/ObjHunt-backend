@@ -2,6 +2,7 @@
 import express from "express";
 import http from "http";
 import dotenv from "dotenv";
+import cors from "cors";
 dotenv.config({ path: "./.env" });
 
 //Importing functions
@@ -10,6 +11,7 @@ import { initializeSocket } from "./socket/socket.js";
 
 //Setting up server
 const app = express();
+app.use(cors());
 const httpServer = http.createServer(app);
 const port = process.env.PORT || 6969;
 

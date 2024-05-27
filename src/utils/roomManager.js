@@ -79,9 +79,10 @@ function removePlayer(socketId, roomId) {
 
 //Function to generate leaderboard
 function generateLeaderboard(roomId) {
-  const room = rooms.find((room) => room.id === roomId);
+  console.log(roomId)
+  const room = rooms.find((room) => room.id == roomId);
   if (!room) {
-    return "Room not found";
+    return [];
   }
 
   const leaderboard = room.players.map((player) => ({
@@ -97,7 +98,7 @@ function generateLeaderboard(roomId) {
 
 //Function to get a room's details
 function GetRoomDetails(roomId) {
-  const room = rooms.find((room) => room.id === roomId);
+  const room = rooms.find((room) => room.id == roomId);
   if (!room) return 0;
   return room;
 }

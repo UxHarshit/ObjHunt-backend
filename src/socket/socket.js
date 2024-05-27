@@ -104,7 +104,8 @@ export function initializeSocket(httpServer) {
       }
     });
 
-    socket.on("joinById", ({ username, roomId }) => {
+    socket.on("joinById", async (data) => {
+      let {username, roomId} = await JSON.parse(data);
       if (!username) {
         // If no username, emitting error.
         io.to(socket.id).emit("error", "Please send username");
@@ -115,7 +116,6 @@ export function initializeSocket(httpServer) {
         // Storing username and roomId
         user = username;
         room = roomId;
-        console.log(user, room);
 
         // Checking if the room exists
         if (room !== undefined) {
