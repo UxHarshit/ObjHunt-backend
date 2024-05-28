@@ -11,6 +11,8 @@ function validateUserName(socket, next, gameManager) {
     if (gameManager.isRoomEmpty()) {
         next();
     } else {
+        if(gameManager.isBanned(roomId, name)) return next(new Error('You are banned from this room'));
+
         if (!gameManager.roomExists(roomId)) {
             next();
         } else if (gameManager.checkName(roomId, name)) {
