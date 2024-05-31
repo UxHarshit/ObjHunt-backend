@@ -2,9 +2,11 @@ import * as cocoSsd from "@tensorflow-models/coco-ssd";
 import * as mobilenet from "@tensorflow-models/mobilenet";
 import * as tf from "@tensorflow/tfjs-node";
 import fs from "fs/promises";
+import { GetRoomDetails } from "./roomManager.js";
+
 
 //temporary function name
-const checkImage = async (image, room) => {
+const checkImage = async (image, roomId) => {
   try {
     const name = Math.random();
     await fs.writeFile("uploads/" + name + ".jpg", image);
