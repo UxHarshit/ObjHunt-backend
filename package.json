@@ -19,12 +19,13 @@
   },
   "homepage": "https://github.com/24kaushik/ObjHunt-backend#readme",
   "dependencies": {
+    "@tensorflow-models/coco-ssd": "^2.2.3",
+    "@tensorflow-models/mobilenet": "^2.1.1",
+    "@tensorflow/tfjs-node": "^4.19.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "socket.io": "^4.7.5",
-    "@tensorflow-models/coco-ssd": "^2.2.3",
-    "@tensorflow/tfjs-node": "^4.19.0"
+    "socket.io": "^4.7.5"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
